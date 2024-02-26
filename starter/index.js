@@ -1,15 +1,150 @@
+const inquirer = require("inquirer");
+const fs = require("fs");
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
-const inquirer = require("inquirer");
-const path = require("path");
-const fs = require("fs");
+const render = require("./src/page-template");
 
-const OUTPUT_DIR = path.resolve(__dirname, "output");
-const outputPath = path.join(OUTPUT_DIR, "team.html");
+const OUTPUT_DIR = "./output";
+const outputPath = "./output/team.html";
 
-const render = require("./src/page-template.js");
+// Function to prompt user for manager information
+function promptManager() {
+    return inquirer.prompt([
+        {
+            type: "input",
+            name: "name",
+            message: "Enter the manager's name:"
+        },
+        {
+            type: "input",
+            name: "id",
+            message: "Enter the manager's employee ID:"
+        },
+        {
+            type: "input",
+            name: "email",
+            message: "Enter the manager's email address:"
+        },
+        {
+            type: "input",
+            name: "officeNumber",
+            message: "Enter the manager's office number:"
+        }
+    ]);
+}
 
+// Function to prompt user for engineer information
+function promptEngineer() {
+    return inquirer.prompt([
+        {
+            type: "input",
+            name: "name",
+            message: "Enter the engineer's name:"
+        },
+        {
+            type: "input",
+            name: "id",
+            message: "Enter the engineer's employee ID:"
+        },
+        {
+            type: "input",
+            name: "email",
+            message: "Enter the engineer's email address:"
+        },
+        {
+            type: "input",
+            name: "github",
+            message: "Enter the engineer's GitHub username:"
+        }
+    ]);
+}
 
-// TODO: Write Code to gather information about the development team members, and render the HTML file.
+// Function to prompt user for intern information
+function promptIntern() {
+    return inquirer.prompt([
+        {
+            type: "input",
+            name: "name",
+            message: "Enter the intern's name:"
+        },
+        {
+            type: "input",
+            name: "id",
+            message: "Enter the intern's employee ID:"
+        },
+        {
+            type: "input",
+            name: "email",
+            message: "Enter the intern's email address:"
+        },
+        {
+            type: "input",
+            name: "school",
+            message: "Enter the intern's school:"
+        }
+    ]);
+}
 
+// Function to start the application
+function init() {
+    const teamMembers = [];
+
+    // Prompt user for manager information
+    promptManager()
+        .then(managerData => {
+            const manager = new Manager(managerData.name, managerData.id, managerData.email, managerData.officeNumber);
+            teamMembers.push(manager);
+            return promptTeamMember();
+        })
+        .then(() => {
+            // Generate HTML content
+            const html = render(teamMembers);
+            
+            // Check if output directory exists, create if not
+            if (!fs.existsSync(OUTPUT_DIR)) {
+                fs.mkdirSync(OUTPUT_DIR);
+            }
+
+            // Write HTML content to file
+            fs.writeFileSync(outputPath, html);
+
+            console.log("Team page generated successfully!");
+        })
+        .catch(err => console.error(err));
+}
+
+// Function to prompt user to add another team member or finish building the team
+function promptTeamMember() {
+    return inquirer.prompt([
+        {
+            type: "list",
+            name: "choice",
+            message: "What type of team member would you like to add?",
+            choices: ["Engineer", "Intern", "Finish building the team"]
+        }
+    ])
+    .then(answer => {
+        switch (answer.choice) {
+            case "Engineer":
+                return promptEngineer()
+                    .then(engineerData => {
+                        const engineer = new Engineer(engineerData.name, engineerData.id, engineerData.email, engineerData.github);
+                        teamMembers.push(engineer);
+                        return promptTeamMember();
+                    });
+            case "Intern":
+                return promptIntern()
+                    .then(internData => {
+                        const intern = new Intern(internData.name, internData.id, internData.email, internData.school);
+                        teamMembers.push(intern);
+                        return promptTeamMember();
+                    });
+            default:
+                return Promise.resolve();
+        }
+    });
+}
+
+// Initialise the application
+init();
