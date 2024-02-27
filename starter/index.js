@@ -95,12 +95,12 @@ function init() {
         .then(managerData => {
             const manager = new Manager(managerData.name, managerData.id, managerData.email, managerData.officeNumber);
             teamMembers.push(manager);
-            return promptTeamMember();
+            return promptTeamMember(teamMembers); // Pass teamMembers to promptTeamMember
         })
         .then(() => {
             // Generate HTML content
             const html = render(teamMembers);
-            
+
             // Check if output directory exists, create if not
             if (!fs.existsSync(OUTPUT_DIR)) {
                 fs.mkdirSync(OUTPUT_DIR);
@@ -115,7 +115,7 @@ function init() {
 }
 
 // Function to prompt user to add another team member or finish building the team
-function promptTeamMember() {
+function promptTeamMember(teamMembers) { // Receive teamMembers as parameter
     return inquirer.prompt([
         {
             type: "list",
@@ -124,26 +124,26 @@ function promptTeamMember() {
             choices: ["Engineer", "Intern", "Finish building the team"]
         }
     ])
-    .then(answer => {
-        switch (answer.choice) {
-            case "Engineer":
-                return promptEngineer()
-                    .then(engineerData => {
-                        const engineer = new Engineer(engineerData.name, engineerData.id, engineerData.email, engineerData.github);
-                        teamMembers.push(engineer);
-                        return promptTeamMember();
-                    });
-            case "Intern":
-                return promptIntern()
-                    .then(internData => {
-                        const intern = new Intern(internData.name, internData.id, internData.email, internData.school);
-                        teamMembers.push(intern);
-                        return promptTeamMember();
-                    });
-            default:
-                return Promise.resolve();
-        }
-    });
+        .then(answer => {
+            switch (answer.choice) {
+                case "Engineer":
+                    return promptEngineer()
+                        .then(engineerData => {
+                            const engineer = new Engineer(engineerData.name, engineerData.id, engineerData.email, engineerData.github);
+                            teamMembers.push(engineer);
+                            return promptTeamMember(teamMembers); // Pass teamMembers recursively
+                        });
+                case "Intern":
+                    return promptIntern()
+                        .then(internData => {
+                            const intern = new Intern(internData.name, internData.id, internData.email, internData.school);
+                            teamMembers.push(intern);
+                            return promptTeamMember(teamMembers); // Pass teamMembers recursively
+                        });
+                default:
+                    return Promise.resolve(teamMembers); // Resolve with teamMembers when finished
+            }
+        });
 }
 
 // Initialise the application
