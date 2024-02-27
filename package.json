@@ -1,0 +1,15 @@
+{
+  "name": "colleague-profile-generator",
+  "version": "1.0.0",
+  "description": "Your project description",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "29.5.0"
+  },
+  "dependencies": {
+    "inquirer": "^6.5.2"
+  }
+}
