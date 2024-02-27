@@ -86,7 +86,7 @@ function promptIntern() {
     ]);
 }
 
-// Function to start the application
+//// Function to start the application
 function init() {
     const teamMembers = [];
 
@@ -98,15 +98,15 @@ function init() {
             return promptTeamMember(teamMembers); // Pass teamMembers to promptTeamMember
         })
         .then(() => {
-            // Generate HTML content
+            // Generate the HTML content
             const html = render(teamMembers);
 
-            // Check if output directory exists, create if not
+            // Check if output directory exists/ create if the do not
             if (!fs.existsSync(OUTPUT_DIR)) {
                 fs.mkdirSync(OUTPUT_DIR);
             }
 
-            // Write HTML content to file
+            // Write HTML content to the file
             fs.writeFileSync(outputPath, html);
 
             console.log("Team page generated successfully!");
@@ -114,7 +114,7 @@ function init() {
         .catch(err => console.error(err));
 }
 
-// Function to prompt user to add another team member or finish building the team
+// Function add another team member or finish building the team
 function promptTeamMember(teamMembers) { // Receive teamMembers as parameter
     return inquirer.prompt([
         {
@@ -131,17 +131,17 @@ function promptTeamMember(teamMembers) { // Receive teamMembers as parameter
                         .then(engineerData => {
                             const engineer = new Engineer(engineerData.name, engineerData.id, engineerData.email, engineerData.github);
                             teamMembers.push(engineer);
-                            return promptTeamMember(teamMembers); // Pass teamMembers recursively
+                            return promptTeamMember(teamMembers); // Pass teamMembers repeatedly
                         });
                 case "Intern":
                     return promptIntern()
                         .then(internData => {
                             const intern = new Intern(internData.name, internData.id, internData.email, internData.school);
                             teamMembers.push(intern);
-                            return promptTeamMember(teamMembers); // Pass teamMembers recursively
+                            return promptTeamMember(teamMembers); // Pass teamMembers repeatedly
                         });
                 default:
-                    return Promise.resolve(teamMembers); // Resolve with teamMembers when finished
+                    return Promise.resolve(teamMembers); // when finished resolve with teamMembers w
             }
         });
 }
