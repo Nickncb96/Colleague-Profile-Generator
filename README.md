@@ -41,7 +41,7 @@ As a manager, I want to quickly generate a webpage that displays my team's basic
 - **HTML/CSS:**
 
 ## Demo
-
+![Screenshot of the generated team webpage](./assets/Screenshot%20.JPG)
 
 
 ## Installation
@@ -75,6 +75,7 @@ node index.js
 ```
 
 Follow the prompts to enter information for each team member. Once you've finished adding team members, the application will generate the HTML file (`team.html`) in the `output` folder.
+
 
 ## Tests
 
